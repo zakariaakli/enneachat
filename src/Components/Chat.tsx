@@ -56,7 +56,7 @@ const Chat: React.FC = () => {
     });
 
     const run = await openai.beta.threads.runs.create(thread.id, {
-      assistant_id: "asst_FBGiNyeXHLkKi1vCYrAjIQyR",
+      assistant_id: process.env.REACT_APP_ASSISTANT_ID,
     });
 
     let response = await openai.beta.threads.runs.retrieve(thread.id, run.id);
