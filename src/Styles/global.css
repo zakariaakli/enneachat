@@ -1,0 +1,9 @@
+@media (max-width: 600px) {
+    .inputContainer {
+      flex-direction: column;
+    }
+
+    .chatContainer {
+      height: 100vh; /* Full height on small screens */
+    }
+  }

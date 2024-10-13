@@ -1,0 +1,16 @@
+body {
+    font-family: 'Arial', sans-serif; /* Choose a professional font */
+    background-color: #f0f4f8; /* Light background */
+    margin: 0;
+    padding: 0;
+  }
+
+  button {
+    background-color: #007bff; /* Primary color for buttons */
+    color: white;
+    border: none;
+  }
+
+  button:hover {
+    background-color: #0056b3; /* Darker shade on hover */
+  }
