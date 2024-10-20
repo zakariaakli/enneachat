@@ -1,7 +1,7 @@
 import React from 'react';
 import { TextField, Button, Grid } from '@mui/material';
 import styles from './Styles/ChatInput.module.css';
-import { generatePDF } from "../Helpers/pdfHelper"
+import { generatePDF } from "../Helpers/pdfHelpers"
 
 
 interface ChatInputProps {
@@ -21,6 +21,24 @@ const ChatInput: React.FC<ChatInputProps> = ({ input, setInput, handleSendMessag
     }
   };
 
+  const triadData = {
+    triadLabels: ['Type 1', 'Type 2', 'Type 3'],
+    triad1Values: [8, 7, 9],
+    triad2Values: [6, 5, 8],
+    triad3Values: [7, 6, 8],
+    typeLabels: ['Type A', 'Type B', 'Type C'],
+    type1Values: [8, 5, 6],
+    type2Values: [7, 6, 9],
+    type3Values: [5, 4, 6],
+  };
+
+  // Call the function
+ // generatePDF(triadData);
+
+
+// Call the PDF generation function
+//generatePDF('Zakaria AKLI', triadData, typeData);
+
   return (
     <Grid container spacing={2} className={styles.inputContainer}>
       <Grid item xs={9}>
@@ -39,13 +57,15 @@ const ChatInput: React.FC<ChatInputProps> = ({ input, setInput, handleSendMessag
           Send
         </Button>
         <Button variant="contained"  style={{height: '30px', margin: '10px'}} color="warning"
-        onClick={refreshTest} disabled={isWaiting}>
+        onClick={refreshTest}
+        disabled={isWaiting}>
           Restart
         </Button>
-        {isTestFinished && <Button variant="contained"  style={{height: '40px', margin: '10px'}} color="warning"
+
+        {/* {isTestFinished && <Button variant="contained"  style={{height: '40px', margin: '10px'}} color="warning"
             onClick={() => generatePDF(name)}  disabled={isWaiting}>
           Send Report
-        </Button>}
+        </Button>} */}
       </Grid>
     </Grid>
   );

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import { Container, Grid, Box, LinearProgress, Button } from "@mui/material"; // Import Button
 import ChatInput from "./ChatInput";
 import Message from "./Message";
@@ -8,16 +8,11 @@ import { collection, addDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { z } from "zod";
+import {DataContext} from "../Helpers/dataContext"
+import { ResultData } from "../Models/EnneagramResult";
 
-
-interface ResultData {
-  EnneaType1: number;
-  EnneaType2: number;
-  EnneaType3: number;
-  Profession: string;
-  UserName: string;
-  Triad: string;
-  UserId: string;
+interface ChatProps{
+  setAssessmentResult: (result: any) => void;
 }
 
 // Function to check if the chatbot has completed the process
@@ -26,36 +21,7 @@ function hasChatbotFinishedFunc(message: string): boolean {
   return hasWeAre;
 }
 
-// Function to extract name, date, and result from the chatbot's final message
-function extractInfoFromChatbotMessage(message: string) {
-  if (!hasChatbotFinishedFunc(message)) {
-    console.log("Chatbot hasn't finished yet.");
-    return null;
-  }
-
-// Define regex patterns to extract information from the updated message
-const datePattern = /We are the ([\w\s]+),/;  // Extracts the date
-const namePattern = /You are ([\w\s]+) -/;    // Extracts the name
-const professionPattern = /- ([\w\s]+),/;     // Extracts the profession
-const resultPattern = /Enneagram likely type: (\d)/; // Extracts the Enneagram type
-
-// Use regex to match patterns
-const dateMatch = message.match(datePattern);
-const nameMatch = message.match(namePattern);
-const professionMatch = message.match(professionPattern);
-const resultMatch = message.match(resultPattern);
-
-// Extract values or return default if not found
-const date = dateMatch ? dateMatch[1] : 'Unknown date';
-const name = nameMatch ? nameMatch[1] : 'Unknown user';
-const profession = professionMatch ? professionMatch[1] : 'Unknown profession';
-const result = resultMatch ? resultMatch[1] : 0;
-
-// Return extracted data
-return { date, name, profession, result };
-};
-
-const Chat: React.FC = () => {
+const Chat: React.FC<ChatProps> = ({setAssessmentResult}) => {
   const [isWaiting, setIsWaiting] = useState<boolean>(false);
   const [messages, setMessages] = useState<Array<MessageDto>>([]);
   const [input, setInput] = useState<string>("");
@@ -68,6 +34,8 @@ const Chat: React.FC = () => {
   const [name, setName] = useState<string>("");
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const updateData  = useContext(DataContext);
 
   useEffect(() => {
     initChatBot();
@@ -108,8 +76,6 @@ const Chat: React.FC = () => {
     setMessages(newMessages);
     setInput("");
 
-
-
     await openai.beta.threads.messages.create(thread.id, {
       role: "user",
       content: message || input, // Use the passed message or input state
@@ -133,9 +99,7 @@ const Chat: React.FC = () => {
     const lastMessage = messageList.data
       .filter((message: any) => message.run_id === run.id && message.role === "assistant")
       .pop();
-      console.log("-------------------");
-    console.log(lastMessage);
-    console.log("-------------------");
+
     if (lastMessage) {
       setMessages([...newMessages, createNewMessage(lastMessage.content[0]["text"].value, false)]);
       if (hasChatbotFinishedFunc(lastMessage.content[0]["text"].value)) {
@@ -153,31 +117,22 @@ const Chat: React.FC = () => {
       const completion = await openai.beta.chat.completions.parse({
         model: "gpt-4o-2024-08-06",
         messages: [
-          { role: "system", content: "extract the most likely enneagram type that the user might be the enneagramtype1 being the most likely. then extract the name, prfession, and the enneagram triad" },
-          { role: "user", content: "Certainly, heres a detailed report of your responses and the final assessment:**Instinctive Triad:**- I often rely on my gut feelings to make decisions: **5**- I am very aware of my environment and react quickly to changes: **6**- Physical activity is important to me, and I feel best when I am active: **4****Feeling Triad:**- Relationships are very important to me, and I prioritize maintaining personal connections: **4**- I am highly aware of my own and others' emotions: **7**- I often consider how my actions will affect others before I act: **5****Thinking Triad:**- I seek to understand the world through logic and analysis: **6**- I am often detached from my emotions when making decisions: **6**- I plan meticulously and think through possible scenarios before deciding: **9****Type Determination within Thinking Triad:**- Type Five: The Investigator  - I am curious and always looking to learn more about how things work: **7**  - I often prefer to observe rather than participate: **3**- Type Six: The Loyalist  - I am cautious and like to be prepared for any situation: **9**  - I seek security and often worry about what could go wrong: **9**- Type Seven: The Enthusiast  - I am energetic and always planning new adventures: **4**Based on the highest scores, particularly in the Thinking Triad and within Type Six questions, your Enneagram likely type is Type Six: The Loyalist.We are the - [today's date] - you are - Zakaria Akli - and here is your final result - Enneagram likely type: Type Six - The Loyalist.If you want, click on the button to book an appointment." },
+          { role: "system", content: "extract the most likely enneagram type that the user might be the enneagramtype1 being the most likely. in the enneagramtype2 you put the second most likely type. in the enneagramtype3 you put the third most likely type. then extract the name, profession, and the enneagram triad" },
+          { role: "user", content: lastMessage.content[0]["text"].value },
         ],
         response_format: zodResponseFormat(EnneagramResult, "result"),
       });
       const event = completion.choices[0].message.parsed;
-      console.log(event);
-      setName(event.name);
+      try{
+        // Add the result to the database
+        addResult(event);
+// sen data to the parent component to update the
+setAssessmentResult(event);
+      }
+      catch(error){
+        console.log("Error adding result: ", error);
+      }
 
-      //END TEST OPENAI API
-        const res = extractInfoFromChatbotMessage(lastMessage.content[0]["text"].value);
-        if (res) {
-          const data: ResultData = {
-            EnneaType1: Number(res.result),
-            EnneaType2: 0,
-            EnneaType3: 0,
-            Profession: res.profession,
-            UserName: res.name,
-            Triad: "",
-            UserId: "",
-          };
-          addResult(data);
-        }
-
-        console.log(res);
       }
       } else {
         console.log("Chatbot process is not yet complete.");
@@ -226,19 +181,27 @@ const Chat: React.FC = () => {
         </Grid>
       </Box>
       {showButtons && (
-        <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
-          {[...Array(10).keys()].map((num) => (
-            <Button
-              key={num}
-              variant="contained"
-              onClick={() => handleButtonClick(num)}
-              sx={{ margin: 0.5 }}
-              style={{height: '30px', width : '30px'}}
-            >
-              {num}
-            </Button>
-          ))}
-        </Box>
+       <Box
+       sx={{
+         display: "flex",
+         flexWrap: "wrap",        // Enables wrapping of buttons
+         justifyContent: "center",
+         marginTop: 2,
+         maxWidth: "100%",       // Set the width to control the number of buttons per row
+       }}
+     >
+       {[...Array(10).keys()].map((num) => (
+         <Button
+           key={num}
+           variant="contained"
+           onClick={() => handleButtonClick(num)}
+           sx={{ margin: 0.5 }}
+           style={{ height: '15px', width: '30px' }}  // Adjusted width and height for visibility
+         >
+           {num}
+         </Button>
+       ))}
+     </Box>
       )}
       <ChatInput
         input={input}
