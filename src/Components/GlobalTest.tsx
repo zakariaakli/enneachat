@@ -41,11 +41,10 @@ const RadarChart: React.FC = () => {
         </div>
 
 <div className="Result-section">
-          <h2>Your Results</h2>
-          <p>Discover your Enneagram type and what it means for you!</p>
+          <h3>Discover your Enneagram type and what it means for you!</h3>
           <button className="Book-appointment-button">Book an Appointment with a Coach</button>
           {
-    assessmentResult != null ? <ResultTest {...assessmentResult} /> : null
+     <ResultTest data={ assessmentResult ?? null} />
     }
         </div>
 

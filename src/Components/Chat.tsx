@@ -44,7 +44,7 @@ const Chat: React.FC<ChatProps> = ({setAssessmentResult}) => {
   useEffect(() => {
     setMessages([
       {
-        content: "Hi, I'm your Enneagram assistant. Do you want to run a type assessment?",
+        content: "Hi, I'm your Enneagram assistant. How can I help you?",
         isUser: false,
       },
     ]);
@@ -166,9 +166,7 @@ setAssessmentResult(event);
   };
 
 
-
-
-  return (
+ return (
     <Container maxWidth="sm" sx={{ height: "70vh", display: "flex", flexDirection: "column" }}>
       <Box sx={{ flexGrow: 1, overflowY: "auto", padding: 2 }}>
         <Grid container direction="column" spacing={2}>

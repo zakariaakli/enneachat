@@ -17,7 +17,7 @@ ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, 
 
 
 
-const RadarChart: React.FC<ResultData | null> = (data) => {
+const RadarChart: React.FC<{ data:  ResultData | null}> = ({data}) => {
 
   const RadarOptions = {
     scales: {
@@ -84,7 +84,7 @@ const RadarChart: React.FC<ResultData | null> = (data) => {
 
 :
 <>
-<h2>Average people assessment shows the following results. Continue your assessment to have your specific Enneagram Type</h2>
+<h2>Average people assessment shows the following results</h2>
 <Radar data={DefaultRadarData} options={RadarOptions} />
 </>
 
