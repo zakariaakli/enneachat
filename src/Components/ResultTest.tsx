@@ -60,7 +60,7 @@ const RadarChart: React.FC<{ data:  ResultData | null}> = ({data}) => {
     labels: ["Perfectionnist", "Helper", "Achiever"],
     datasets: [
       {
-        label: "March",
+        label: "Enneagram Type",
         backgroundColor: "rgba(34, 202, 236, .2)",
         borderColor: "rgba(34, 202, 236, 1)",
         pointBackgroundColor: "rgba(34, 202, 236, 1)",
