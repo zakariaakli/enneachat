@@ -1,17 +1,17 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
-import { Container, Grid, Box, LinearProgress, Button } from "@mui/material"; // Import Button
 import ChatInput from "./ChatInput";
 import Message from "./Message";
-import { OpenAI} from "openai";
+import { OpenAI } from "openai";
 import { MessageDto } from "../Models/MessageDto";
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { z } from "zod";
-import {DataContext} from "../Helpers/dataContext"
+import { DataContext } from "../Helpers/dataContext"
 import { ResultData } from "../Models/EnneagramResult";
+import { Container, Row, Col, Button, ProgressBar, Spinner } from "react-bootstrap";
 
-interface ChatProps{
+interface ChatProps {
   setAssessmentResult: (result: any) => void;
 }
 
@@ -21,7 +21,7 @@ function hasChatbotFinishedFunc(message: string): boolean {
   return hasWeAre;
 }
 
-const Chat: React.FC<ChatProps> = ({setAssessmentResult}) => {
+const Chat: React.FC<ChatProps> = ({ setAssessmentResult }) => {
   const [isWaiting, setIsWaiting] = useState<boolean>(false);
   const [messages, setMessages] = useState<Array<MessageDto>>([]);
   const [input, setInput] = useState<string>("");
@@ -35,7 +35,7 @@ const Chat: React.FC<ChatProps> = ({setAssessmentResult}) => {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const updateData  = useContext(DataContext);
+  const updateData = useContext(DataContext);
 
   useEffect(() => {
     initChatBot();
@@ -101,48 +101,52 @@ const Chat: React.FC<ChatProps> = ({setAssessmentResult}) => {
       .pop();
 
     if (lastMessage) {
-      setMessages([...newMessages, createNewMessage(lastMessage.content[0]["text"].value, false)]);
-      if (hasChatbotFinishedFunc(lastMessage.content[0]["text"].value)) {
-        setHasChatbotFinished(true);
+      const lastContent = lastMessage.content[0]["text"].value;
+      if (typeof lastContent === "string") {
+        setMessages([...newMessages, createNewMessage(lastMessage.content[0]["text"].value, false)]);
+        if (hasChatbotFinishedFunc(lastMessage.content[0]["text"].value)) {
+          setHasChatbotFinished(true);
           // TEST OPENAI API
-      const EnneagramResult = z.object({
-        enneagramType1: z.number(),
-        enneagramType2: z.number(),
-        enneagramType3: z.number(),
-        profession: z.string(),
-        name: z.string(),
-        triad: z.string(),
-      });
+          const EnneagramResult = z.object({
+            enneagramType1: z.number(),
+            enneagramType2: z.number(),
+            enneagramType3: z.number(),
+            profession: z.string(),
+            name: z.string(),
+            triad: z.string(),
+          });
 
-      const completion = await openai.beta.chat.completions.parse({
-        model: "gpt-4o-2024-08-06",
-        messages: [
-          { role: "system", content: "extract the most likely enneagram type that the user might be the enneagramtype1 being the most likely. in the enneagramtype2 you put the second most likely type. in the enneagramtype3 you put the third most likely type. then extract the name, profession, and the enneagram triad" },
-          { role: "user", content: lastMessage.content[0]["text"].value },
-        ],
-        response_format: zodResponseFormat(EnneagramResult, "result"),
-      });
-      const event = completion.choices[0].message.parsed;
-      try{
-        // Add the result to the database
-        addResult(event);
-// sen data to the parent component to update the
-setAssessmentResult(event);
-      }
-      catch(error){
-        console.log("Error adding result: ", error);
-      }
+          const completion = await openai.beta.chat.completions.parse({
+            model: "gpt-4o-2024-08-06",
+            messages: [
+              { role: "system", content: "extract the most likely enneagram type that the user might be the enneagramtype1 being the most likely. in the enneagramtype2 you put the second most likely type. in the enneagramtype3 you put the third most likely type. then extract the name, profession, and the enneagram triad" },
+              { role: "user", content: lastMessage.content[0]["text"].value },
+            ],
+            response_format: zodResponseFormat(EnneagramResult, "result"),
+          });
+          const event = completion.choices[0].message.parsed;
+          try {
+            // Add the result to the database
+            addResult(event);
+            // sen data to the parent component to update the
+            setAssessmentResult(event);
+          }
+          catch (error) {
+            console.log("Error adding result: ", error);
+          }
 
-      }
+        }
       } else {
         console.log("Chatbot process is not yet complete.");
       }
+    }
+
 
 
     // Check if the last message is a prompt for rating
     if (lastMessage && (lastMessage.content[0]["text"].value.includes("Please rate the following"))
-          || lastMessage.content[0]["text"].value.includes("please rate the following")
-          || lastMessage.content[0]["text"].value.includes("Now, please rate the")) {
+      || lastMessage.content[0]["text"].value.includes("please rate the following")
+      || lastMessage.content[0]["text"].value.includes("Now, please rate the")) {
       setShowButtons(true);
       setRatingQuestion(lastMessage.content[0]["text"].value);
     } else {
@@ -166,53 +170,53 @@ setAssessmentResult(event);
   };
 
 
- return (
-    <Container maxWidth="sm" sx={{ height: "70vh", display: "flex", flexDirection: "column" }}>
-      <Box sx={{ flexGrow: 1, overflowY: "auto", padding: 2 }}>
-        <Grid container direction="column" spacing={2}>
+  return (
+    <Container fluid="sm" className="chat-container d-flex flex-column">
+      <div className="chat-box flex-grow-1 overflow-auto p-3">
+        <Row>
           {messages.map((message, index) => (
-            <Grid item alignSelf={message.isUser ? "flex-end" : "flex-start"} key={index}>
+            <Col
+              xs={12}
+              className={`d-flex ${message.isUser ? "justify-content-end" : "justify-content-start"} mb-2`}
+              key={index}
+            >
               <Message message={message} />
-            </Grid>
+            </Col>
           ))}
-          <div ref={messagesEndRef} />
-        </Grid>
-      </Box>
+        </Row>
+        <div ref={messagesEndRef} />
+      </div>
+
       {showButtons && (
-       <Box
-       sx={{
-         display: "flex",
-         flexWrap: "wrap",        // Enables wrapping of buttons
-         justifyContent: "center",
-         marginTop: 2,
-         maxWidth: "100%",       // Set the width to control the number of buttons per row
-       }}
-     >
-       {[...Array(10).keys()].map((num) => (
-         <Button
-           key={num}
-           variant="contained"
-           onClick={() => handleButtonClick(num)}
-           sx={{ margin: 0.5 }}
-           style={{ height: '15px', width: '30px' }}  // Adjusted width and height for visibility
-         >
-           {num}
-         </Button>
-       ))}
-     </Box>
+        <Row className="button-group justify-content-center my-2">
+          {[...Array(10).keys()].map((num) => (
+            <Button
+              key={num}
+              variant="outline-primary"
+              onClick={() => handleButtonClick(num)}
+              className="rating-button m-1"
+            >
+              {num}
+            </Button>
+          ))}
+        </Row>
       )}
+
       <ChatInput
         input={input}
         setInput={setInput}
-        handleSendMessage={handleSendMessage} // Pass the modified function
+        handleSendMessage={() => handleSendMessage(input)}
         refreshTest={initChatBot}
         isWaiting={isWaiting}
         isTestFinished={hasChatbotFinished}
         name={name}
       />
-      {isWaiting && <LinearProgress color="inherit" />}
+
+      {isWaiting && <ProgressBar animated now={100} className="loading-bar" />}
     </Container>
   );
 }
+
+
 
 export default Chat;

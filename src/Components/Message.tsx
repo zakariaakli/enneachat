@@ -3,21 +3,29 @@ import { MessageDto } from "../Models/MessageDto";
 import styles from './Styles/Message.module.css';
 
 interface MessageProps {
-  message: MessageDto;
+  message: {
+    content: string | any; // Change this type if the structure of message.content is different
+    isUser: boolean;
+};
 }
-
 const Message: React.FC<MessageProps> = ({ message }) => {
+  console.log(message);
   return (
-    <div style={{ textAlign: message.isUser ? "right" : "left", margin: "8px" }}>
-      <div className={message.isUser ? styles.userMessage : styles.assistantMessage}>
-        {message.content.split("\n").map((text, index) => (
-          <React.Fragment key={index}>
-            {text}
-            <br />
-          </React.Fragment>
-        ))}
+      <div style={{ textAlign: message.isUser ? "right" : "left", margin: "8px" }}>
+          <div className={message.isUser ? styles.userMessage : styles.assistantMessage}
+          style={{backgroundColor: message.isUser ? "#28a745" : ""}}>
+              {message && typeof message.content === "string" ? (
+                  message.content.split("\n").map((text, index) => (
+                      <React.Fragment key={index}>
+                          {text}
+                          <br />
+                      </React.Fragment>
+                  ))
+              ) : (
+                  <div>Error: Message content is not a string.</div>
+              )}
+          </div>
       </div>
-    </div>
   );
 };
 

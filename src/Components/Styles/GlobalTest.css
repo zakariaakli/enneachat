@@ -1,0 +1,13 @@
+/* GlobalTest.css */
+.title-green {
+    color: #005F0F;
+    text-align: center;
+    padding: 0.5rem 0;
+  }
+
+  .column-content {
+    padding: 1rem;
+    border: 1px solid #ddd; /* Optional border for visual clarity */
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+  }

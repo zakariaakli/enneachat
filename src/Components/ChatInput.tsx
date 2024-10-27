@@ -1,8 +1,9 @@
 import React from 'react';
-import { TextField, Button, Grid } from '@mui/material';
+import { TextField, Grid } from '@mui/material';
 import styles from './Styles/ChatInput.module.css';
 import { generatePDF } from "../Helpers/pdfHelpers"
-
+import { Container, Row, Col, Button, ProgressBar, Spinner } from "react-bootstrap";
+import { BsSend, BsArrowCounterclockwise } from 'react-icons/bs';
 
 interface ChatInputProps {
   input: string;
@@ -32,42 +33,38 @@ const ChatInput: React.FC<ChatInputProps> = ({ input, setInput, handleSendMessag
     type3Values: [5, 4, 6],
   };
 
-  // Call the function
- // generatePDF(triadData);
-
-
-// Call the PDF generation function
-//generatePDF('Zakaria AKLI', triadData, typeData);
-
   return (
-    <Grid container spacing={2} className={styles.inputContainer}>
-      <Grid item xs={9}>
-        <TextField
-          label="Type your message"
-          variant="outlined"
-          fullWidth
-          disabled={isWaiting}
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyPress}
-        />
-      </Grid>
-      <Grid item xs={3} container alignItems="center" justifyContent="center">
-        <Button variant="contained" color="primary" style={{height: '30px', margin: '10px'}} onClick={handleSendMessage} disabled={isWaiting}>
-          Send
-        </Button>
-        <Button variant="contained"  style={{height: '30px', margin: '10px'}} color="warning"
-        onClick={refreshTest}
-        disabled={isWaiting}>
-          Restart
-        </Button>
 
-        {/* {isTestFinished && <Button variant="contained"  style={{height: '40px', margin: '10px'}} color="warning"
-            onClick={() => generatePDF(name)}  disabled={isWaiting}>
-          Send Report
-        </Button>} */}
-      </Grid>
-    </Grid>
+    <Container>
+      <Row className="align-items-center mb-1">
+        <Col xs={12} md={10}>
+          <TextField
+            label="Type your message"
+            variant="outlined"
+            fullWidth
+            disabled={isWaiting}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyPress}
+
+          />
+        </Col>
+        <Col xs={12} md={1}>
+          <Button variant="success" className="mx-1" color="primary" onClick={handleSendMessage} disabled={isWaiting}>
+            <BsSend />
+          </Button>
+        </Col>
+        <Col xs={12} md={1}>
+          <Button variant="dark" className="mx-1" color="warning"
+            onClick={refreshTest}
+            disabled={isWaiting}>
+            <BsArrowCounterclockwise />
+          </Button>
+        </Col>
+      </Row>
+
+    </Container>
+
   );
 };
 

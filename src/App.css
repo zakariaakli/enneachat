@@ -1,3 +1,55 @@
+.header-custom {
+  background-color: #005F0F;
+  color: white;
+  text-align: center;
+  padding: 1.5rem; /* Adjust padding as needed */
+}
+
+.title-green {
+  color: #005F0F;
+  text-align: center;
+  padding: 0.5rem 0;
+}
+
+.Enneagram-logo {
+  max-width: 100%;
+  height: auto;
+  margin: auto;
+}
+
+.Info-section {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background: rgba(76, 175, 80, 0.3);
+  box-shadow: 0 2px 10px #0000001a;
+}
+
+.Chat-section {
+  padding: 1rem;
+  /* border-radius: 0.5rem;
+  box-shadow: 0 2px 10px #0000001a; */
+}
+
+.Result-section {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background: rgba(76, 175, 80, 0.3);
+  box-shadow: 0 2px 10px #0000001a;
+}
+
+.Book-appointment-button {
+  background-color: #005F0F;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.Book-appointment-button:hover {
+  background-color: #004A0C;
+}
+
 .App {
   text-align: center;
 }
@@ -9,63 +61,80 @@
   border-bottom: 4px solid #004B23; /* Darker Green */
 }
 
-.App-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 20px;
-  margin: 0 auto;
-  max-width: 1200px;
+/* Chat Box Styling */
+.chat-container {
+  height: 100%;
+  max-width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #f9f9f9;
 }
 
-.Chat-section{
-  margin: 10px;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+.chat-box {
+  height: 100%;
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f9f9f9;
 }
 
-.Info-section, .Result-section {
-  flex: 1;
-  margin: 10px;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+.chat-box::-webkit-scrollbar {
+  width: 8px;
 }
 
-/* .Info-header {
-  margin-bottom: 10px;
-} */
-
-.Enneagram-logo {
-  max-width: 350px; /* Adjust the logo size */
-  margin: 10px 0;
+.chat-box::-webkit-scrollbar-track {
+  background: #f9f9f9;
 }
 
-.Result-section {
-  text-align: center;
-  background-color: #F7F7F7; /* Light background for contrast */
+.chat-box::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
 }
 
-.Book-appointment-button {
-  background-color: #005F0F; /* Darker green for button */
-  color: white;
+/* Button Styles */
+.rating-button {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  font-size: 0.8rem;
+}
+
+.send-button {
+  background: #00b8d9;
   border: none;
-  padding: 15px 30px;
-  font-size: 18px;
-  font-weight: bold;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.3s;
+  transition: background 0.3s ease;
 }
 
-.Book-appointment-button:hover {
-  background-color: #007A33; /* Lighter green on hover */
-  transform: scale(1.05); /* Slightly enlarge the button */
+.send-button:hover {
+  background: #0097bb;
 }
 
-@media (max-width: 768px) {
-  .App-container {
-    flex-direction: column;
-  }
+.loading-bar {
+  height: 4px;
+  margin-top: 4px;
+  background-color: #00b8d9;
+}
+
+
+/* Chat input*/
+/* app.css */
+.inputContainer {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.inputContainer input[type="text"] {
+  padding: 10px;
+  font-size: 1rem;
+}
+
+.inputContainer::-webkit-scrollbar {
+  width: 8px;
+}
+
+.inputContainer::-webkit-scrollbar-thumb {
+  background-color: darkgreen;
+  border-radius: 10px;
+}
+
+.inputContainer::-webkit-scrollbar-track {
+  background: #f1f1f1;
 }
