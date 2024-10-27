@@ -111,15 +111,19 @@ const Chat: React.FC<ChatProps> = ({ setAssessmentResult }) => {
             enneagramType1: z.number(),
             enneagramType2: z.number(),
             enneagramType3: z.number(),
+            enneagramType4: z.number(),
+            enneagramType5: z.number(),
+            enneagramType6: z.number(),
+            enneagramType7: z.number(),
+            enneagramType8: z.number(),
+            enneagramType9: z.number(),
             profession: z.string(),
-            name: z.string(),
-            triad: z.string(),
           });
 
           const completion = await openai.beta.chat.completions.parse({
             model: "gpt-4o-2024-08-06",
             messages: [
-              { role: "system", content: "extract the most likely enneagram type that the user might be the enneagramtype1 being the most likely. in the enneagramtype2 you put the second most likely type. in the enneagramtype3 you put the third most likely type. then extract the name, profession, and the enneagram triad" },
+              { role: "system", content: "extract the obtaned ratng for each enneagram type you will calculate the average for each type so the reslt for each type will be between 0 and 9. put each of these rating in variables enneagramtype1, enneagramType2, etc. then extract the profession" },
               { role: "user", content: lastMessage.content[0]["text"].value },
             ],
             response_format: zodResponseFormat(EnneagramResult, "result"),
@@ -128,7 +132,7 @@ const Chat: React.FC<ChatProps> = ({ setAssessmentResult }) => {
           try {
             // Add the result to the database
             addResult(event);
-            // sen data to the parent component to update the
+            // send data to the parent component to update the radar chart
             setAssessmentResult(event);
           }
           catch (error) {

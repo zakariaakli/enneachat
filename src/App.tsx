@@ -15,7 +15,7 @@ const App: React.FC = () => {
         <Col>
           <header className="header-custom">
             <h1>Welcome to Enneagram Insights</h1>
-            <p>Your personal journey towards self-discovery and growth starts here!</p>
+            <h4>Your personal journey towards self-discovery and growth starts here!</h4>
           </header>
         </Col>
       </Row>

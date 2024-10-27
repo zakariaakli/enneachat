@@ -22,17 +22,6 @@ const ChatInput: React.FC<ChatInputProps> = ({ input, setInput, handleSendMessag
     }
   };
 
-  const triadData = {
-    triadLabels: ['Type 1', 'Type 2', 'Type 3'],
-    triad1Values: [8, 7, 9],
-    triad2Values: [6, 5, 8],
-    triad3Values: [7, 6, 8],
-    typeLabels: ['Type A', 'Type B', 'Type C'],
-    type1Values: [8, 5, 6],
-    type2Values: [7, 6, 9],
-    type3Values: [5, 4, 6],
-  };
-
   return (
 
     <Container>

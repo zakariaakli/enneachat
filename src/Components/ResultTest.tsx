@@ -1,4 +1,4 @@
-import React, {useContext} from "react";
+import React, { useContext } from "react";
 import { Radar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -9,7 +9,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import {DataContext} from "../Helpers/dataContext"
+import { DataContext } from "../Helpers/dataContext"
 import { ResultData } from "../Models/EnneagramResult";
 
 // Register the necessary components for the Radar chart
@@ -17,7 +17,7 @@ ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, 
 
 
 
-const RadarChart: React.FC<{ data:  ResultData | null}> = ({data}) => {
+const RadarChart: React.FC<{ data: ResultData | null }> = ({ data }) => {
 
   const RadarOptions = {
     scales: {
@@ -26,7 +26,7 @@ const RadarChart: React.FC<{ data:  ResultData | null}> = ({data}) => {
           min: 0,
           max: 20,
           stepSize: 5,
-          backdropColor: 'rgba(255, 255, 255, 0.75)', // Updated for newer version
+          backdropColor: '#343a40', // Updated for newer version
         },
         angleLines: {
           color: '#ebedef',
@@ -41,33 +41,39 @@ const RadarChart: React.FC<{ data:  ResultData | null}> = ({data}) => {
   };
 
   const RadarData = {
-    labels: [data?.enneagramType1, data?.enneagramType2, data?.enneagramType3],
+    labels: ["Perfectionnist", "Helper", "Achiever",
+      "Individualist", "Investigator", "Loyalist",
+      "Enthusiast", "Challenger", "Peacemaker"],
     datasets: [
       {
-        label: "March",
-        backgroundColor: "rgba(34, 202, 236, .2)",
-        borderColor: "rgba(34, 202, 236, 1)",
-        pointBackgroundColor: "rgba(34, 202, 236, 1)",
+        label: "Enneagram Type",
+        backgroundColor: "#28a745",// "#343a40"
+        borderColor: "#005F0F",
+        pointBackgroundColor: "#005F0F",
         pointBorderColor: "#fff",
         pointHoverBackgroundColor: "#fff",
         pointHoverBorderColor: "rgba(34, 202, 236, 1)",
-        data: [data?.enneagramType1, data?.enneagramType2, data?.enneagramType3],
+        data: [data?.enneagramType1, data?.enneagramType2, data?.enneagramType3,
+        data?.enneagramType4, data?.enneagramType5, data?.enneagramType6,
+        data?.enneagramType7, data?.enneagramType8, data?.enneagramType9],
       },
     ],
   };
 
   const DefaultRadarData = {
-    labels: ["Perfectionnist", "Helper", "Achiever"],
+    labels: ["Perfectionnist", "Helper", "Achiever",
+      "Individualist", "Investigator", "Loyalist",
+      "Enthusiast", "Challenger", "Peacemaker"],
     datasets: [
       {
         label: "Enneagram Type",
-        backgroundColor: "rgba(34, 202, 236, .2)",
-        borderColor: "rgba(34, 202, 236, 1)",
-        pointBackgroundColor: "rgba(34, 202, 236, 1)",
+        backgroundColor: "#28a745",// "#343a40"
+        borderColor: "#005F0F",
+        pointBackgroundColor: "#005F0F",
         pointBorderColor: "#fff",
         pointHoverBackgroundColor: "#fff",
         pointHoverBorderColor: "rgba(34, 202, 236, 1)",
-        data: [5, 8, 4],
+        data: [5, 4, 2, 2, 2, 3, 2, 3, 5],
       },
     ],
   };
@@ -77,18 +83,18 @@ const RadarChart: React.FC<{ data:  ResultData | null}> = ({data}) => {
     <div>
 
       {data ?
-      <>
-  <h2>Specific Enneagram result for : {data.UserName}</h2>
-      <Radar data={RadarData} options={RadarOptions} />
-      </>
+        <>
+          <h2>Specific Enneagram result for you as a {data.Profession}</h2>
+          <Radar data={RadarData} options={RadarOptions} />
+        </>
 
-:
-<>
-<h2>Average people assessment shows the following results</h2>
-<Radar data={DefaultRadarData} options={RadarOptions} />
-</>
+        :
+        <>
+          <h2>Average people assessment shows the following results</h2>
+          <Radar data={DefaultRadarData} options={RadarOptions} />
+        </>
 
-    }
+      }
     </div>
   );
 };
