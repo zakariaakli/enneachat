@@ -9,7 +9,7 @@ interface MessageProps {
 };
 }
 const Message: React.FC<MessageProps> = ({ message }) => {
-  console.log(message);
+
   return (
       <div style={{ textAlign: message.isUser ? "right" : "left", margin: "8px" }}>
           <div className={message.isUser ? styles.userMessage : styles.assistantMessage}

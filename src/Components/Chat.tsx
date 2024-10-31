@@ -10,6 +10,7 @@ import { z } from "zod";
 import { DataContext } from "../Helpers/dataContext"
 import { ResultData } from "../Models/EnneagramResult";
 import { Container, Row, Col, Button, ProgressBar, Spinner } from "react-bootstrap";
+import { convertCompilerOptionsFromJson } from "typescript";
 
 interface ChatProps {
   setAssessmentResult: (result: any) => void;
@@ -94,7 +95,7 @@ const Chat: React.FC<ChatProps> = ({ setAssessmentResult }) => {
     }
 
     setIsWaiting(false);
-
+console.log("response", response);
     const messageList = await openai.beta.threads.messages.list(thread.id);
     const lastMessage = messageList.data
       .filter((message: any) => message.run_id === run.id && message.role === "assistant")
@@ -104,6 +105,7 @@ const Chat: React.FC<ChatProps> = ({ setAssessmentResult }) => {
       const lastContent = lastMessage.content[0]["text"].value;
       if (typeof lastContent === "string") {
         setMessages([...newMessages, createNewMessage(lastMessage.content[0]["text"].value, false)]);
+
         if (hasChatbotFinishedFunc(lastMessage.content[0]["text"].value)) {
           setHasChatbotFinished(true);
           // TEST OPENAI API
@@ -123,7 +125,7 @@ const Chat: React.FC<ChatProps> = ({ setAssessmentResult }) => {
           const completion = await openai.beta.chat.completions.parse({
             model: "gpt-4o-2024-08-06",
             messages: [
-              { role: "system", content: "extract the obtaned ratng for each enneagram type you will calculate the average for each type so the reslt for each type will be between 0 and 9. put each of these rating in variables enneagramtype1, enneagramType2, etc. then extract the profession" },
+              { role: "system", content: "extract the obtained rating for each enneagram type you will calculate the average for each type so the reslt for each type will be between 0 and 9. put each of these rating in variables enneagramtype1, enneagramType2, etc. then extract the profession" },
               { role: "user", content: lastMessage.content[0]["text"].value },
             ],
             response_format: zodResponseFormat(EnneagramResult, "result"),
@@ -142,21 +144,24 @@ const Chat: React.FC<ChatProps> = ({ setAssessmentResult }) => {
         }
       } else {
         console.log("Chatbot process is not yet complete.");
+      }}
+
+
+      // Check if the last message is a prompt for rating
+      if (lastMessage && (lastMessage.content[0]["text"].value.includes("Please rate the following"))
+        || lastMessage.content[0]["text"].value.includes("please rate the following")
+        || lastMessage.content[0]["text"].value.includes("Now, please rate the")) {
+        setShowButtons(true);
+        setRatingQuestion(lastMessage.content[0]["text"].value);
+      } else {
+        setShowButtons(false);
       }
-    }
+    };
 
 
 
-    // Check if the last message is a prompt for rating
-    if (lastMessage && (lastMessage.content[0]["text"].value.includes("Please rate the following"))
-      || lastMessage.content[0]["text"].value.includes("please rate the following")
-      || lastMessage.content[0]["text"].value.includes("Now, please rate the")) {
-      setShowButtons(true);
-      setRatingQuestion(lastMessage.content[0]["text"].value);
-    } else {
-      setShowButtons(false);
-    }
-  };
+
+
 
   const handleButtonClick = (value: number) => {
     handleSendMessage(value.toString()); // Send the rating as a string
@@ -172,7 +177,6 @@ const Chat: React.FC<ChatProps> = ({ setAssessmentResult }) => {
       console.error("Error adding document: ", error);
     }
   };
-
 
   return (
     <Container fluid="sm" className="chat-container d-flex flex-column">
