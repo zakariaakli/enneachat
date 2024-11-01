@@ -46,7 +46,7 @@ const RadarChart: React.FC<{ data: ResultData | null }> = ({ data }) => {
       "Enthusiast", "Challenger", "Peacemaker"],
     datasets: [
       {
-        label: "Enneagram Type",
+        label: "Rate",
         backgroundColor: "#28a745",// "#343a40"
         borderColor: "#005F0F",
         pointBackgroundColor: "#005F0F",
@@ -66,7 +66,7 @@ const RadarChart: React.FC<{ data: ResultData | null }> = ({ data }) => {
       "Enthusiast", "Challenger", "Peacemaker"],
     datasets: [
       {
-        label: "Enneagram Type",
+        label: "Rate",
         backgroundColor: "#28a745",// "#343a40"
         borderColor: "#005F0F",
         pointBackgroundColor: "#005F0F",
@@ -84,7 +84,7 @@ const RadarChart: React.FC<{ data: ResultData | null }> = ({ data }) => {
 
       {data ?
         <>
-          <h2>Specific Enneagram result for you as a {data.Profession}</h2>
+          <h2>Specific Enneagram result for you</h2>
           <Radar data={RadarData} options={RadarOptions} />
         </>
 

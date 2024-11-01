@@ -10,7 +10,6 @@ import { z } from "zod";
 import { DataContext } from "../Helpers/dataContext"
 import { ResultData } from "../Models/EnneagramResult";
 import { Container, Row, Col, Button, ProgressBar, Spinner } from "react-bootstrap";
-import { convertCompilerOptionsFromJson } from "typescript";
 
 interface ChatProps {
   setAssessmentResult: (result: any) => void;
@@ -18,7 +17,7 @@ interface ChatProps {
 
 // Function to check if the chatbot has completed the process
 function hasChatbotFinishedFunc(message: string): boolean {
-  const hasWeAre = message.includes("We are");
+  const hasWeAre = message.includes("The Enneagram assessment is now finished");
   return hasWeAre;
 }
 
@@ -107,6 +106,7 @@ console.log("response", response);
         setMessages([...newMessages, createNewMessage(lastMessage.content[0]["text"].value, false)]);
 
         if (hasChatbotFinishedFunc(lastMessage.content[0]["text"].value)) {
+          console.log("Chatbot process is complete.");
           setHasChatbotFinished(true);
           // TEST OPENAI API
           const EnneagramResult = z.object({
@@ -125,7 +125,7 @@ console.log("response", response);
           const completion = await openai.beta.chat.completions.parse({
             model: "gpt-4o-2024-08-06",
             messages: [
-              { role: "system", content: "extract the obtained rating for each enneagram type you will calculate the average for each type so the reslt for each type will be between 0 and 9. put each of these rating in variables enneagramtype1, enneagramType2, etc. then extract the profession" },
+              { role: "system", content: "extract the obtained rating for each enneagram type you will reflect the same results given to the user. put each of these rating in variables respectively enneagramtype1, enneagramType2, etc" },
               { role: "user", content: lastMessage.content[0]["text"].value },
             ],
             response_format: zodResponseFormat(EnneagramResult, "result"),
@@ -169,10 +169,11 @@ console.log("response", response);
   };
 
   const addResult = async (resultData: ResultData) => {
+
     try {
       const resultsCollectionRef = collection(db, "Results");
       const docRef = await addDoc(resultsCollectionRef, resultData);
-      console.log("Document written with ID: ", docRef.id);
+      console.log("Document written with data: ", resultData);
     } catch (error) {
       console.error("Error adding document: ", error);
     }
